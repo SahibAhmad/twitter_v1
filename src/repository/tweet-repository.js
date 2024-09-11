@@ -23,6 +23,7 @@ class TweetRepository {
     async getWithComments(id) {
         try {
             const tweet = await Tweet.findById(id).populate({path: 'comments'});
+            //try with .lean() , it will act as a javascript object but they dont have the save etc functions of mongoose
             return tweet;
         } catch (error) {
             console.log(error);
@@ -43,6 +44,17 @@ class TweetRepository {
         try {
             const tweet = Tweet.findByIdAndDelete(id);
             return tweet;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async getAll(offset, limit) {
+        try {
+            //limit is the number of documents to be returned and 
+            //offset is the number of documents to be skipped
+            const tweets = await Tweet.find().skip(offset).limit(limit);
+            return tweets;
         } catch (error) {
             console.log(error);
         }

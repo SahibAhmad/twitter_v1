@@ -29,14 +29,15 @@ app.listen(3000, async ()=> {
 
     // await tweet.save();
     
-    // const tweet = await TweetRepo.create({content: 'Tweet with commentdfsafdsa schema'});
+    // const tweet = await TweetRepo.create({content: 'Hook tweet'});
+    // console.log(tweet);
     // const comment = await Comment.create({content: 'new comment'});
     // tweet.comments.push(comment);
     // await tweet.save();
 
 
-    const tweet = await TweetRepo.getWithComments("66dd4ae85b0e6c9427d21ebe");
-
-    console.log(tweet); //it will print older content because we are not using {new:true} in findByIdAndUpdate method
+    // const tweet = await TweetRepo.getWithComments("66dd4ae85b0e6c9427d21ebe");
+    // const tweets = await TweetRepo.getAll(0, 10);
+    // console.log(tweets); //it will print older content because we are not using {new:true} in findByIdAndUpdate method
 
 });
