@@ -6,38 +6,17 @@ const app = express();
 const Tweet = require('./models/tweet');
 const TweetRepo = require('./repository/tweet-repository'); 
 const Comment = require('./models/comment');
+const TweetService = require('./services/tweet-service');
 
 app.listen(3000, async ()=> {
     console.log("Server started \n");
     await connect();
     console.log("Mongodb connected \n");
 
-    // const tweet = await Tweet.create({
-    //     content: "First tweet",
-    //     userEmail: "a@b.com"
-    // });
-
-    // const tweets = await Tweet.find({userEmail: "a@b.com"});
-
-    // const tweet = await TweetRepo.update("66dc90cf9c91d1380e95154f", 
-    //     {content:"new good updated content"},
-    //     );
-
-    // const tweet = await TweetRepo.create({content: "Great tweeets great man"});
-    // console.log(tweet);
-    // tweet.comments.push({content: "great commment easy peasy"});
-
-    // await tweet.save();
+    const tweet = await TweetService.create({content: "This is a tweet #veryexcited #good"});
+    console.log(tweet);
+   
     
-    // const tweet = await TweetRepo.create({content: 'Hook tweet'});
-    // console.log(tweet);
-    // const comment = await Comment.create({content: 'new comment'});
-    // tweet.comments.push(comment);
-    // await tweet.save();
-
-
-    // const tweet = await TweetRepo.getWithComments("66dd4ae85b0e6c9427d21ebe");
-    // const tweets = await TweetRepo.getAll(0, 10);
-    // console.log(tweets); //it will print older content because we are not using {new:true} in findByIdAndUpdate method
+    
 
 });

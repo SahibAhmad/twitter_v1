@@ -32,7 +32,13 @@
 - Every tweet might be having a hashtag(we cant extract those using regex maybe)
 
 - [How can we add @mentioning ]
-- [Top k trends / tweets how will we built it, there is whole system design there is a video (stock k heavy hitters)]
+- [Top k trends / tweets how will we built it, there is whole system design there is a video (stock k heavy hitters) it's not like a priority queue is there always running]
 
-- 
+
+
+- Tweets Schema
+    - tweet_id
+    - user_id
+    - content
+    - ...
 

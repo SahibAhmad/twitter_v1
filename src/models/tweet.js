@@ -6,18 +6,17 @@ const tweetSchema =  new mongoose.Schema({
     content: {
         type: String,
         required: true,
-    },
-    userEmail: {
-        type: String,
-    },
+        max: [250, 'Tweet cannot be more than 250 characters'],
 
-    comments: [
+    },
+    hashtags: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Comment',
+            ref: 'Hashtag'
         }
     ]
-    
+
+   
 }, {timestamps: true});
 
 
@@ -28,8 +27,6 @@ tweetSchema.pre('save', function(next){
     // note it is important to pass function like function() not ()=>{} because arrow function does not have this keyword and it will not work
     //it will bind to nearest object which is global object
     // but funtion() will have this keyword bind to the object which is calling it
-
-    this.content = this.content + "!";
     next();
 } );
 
