@@ -58,6 +58,10 @@ class TweetService {
     
         return tweet;
     }
+
+    async getTweets() {
+        return TweetRepository.getAll();
+    }
     
 }
 
