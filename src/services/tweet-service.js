@@ -1,5 +1,5 @@
-const { TweetRepository } = require('../repository/index');
-const Hashtag = require('../models/hashtags');
+const { TweetRepository , HashtagRepository } = require('../repository/index');
+
 class TweetService {
     constructor() {
 
@@ -19,9 +19,7 @@ class TweetService {
         const hashIds = [];
     
         // Find matching hashtags already in the database
-        let matchingHashtags = await Hashtag.find({
-            title: { $in: hashtags }
-        });
+        let matchingHashtags =  await HashtagRepository.getMatching(hashtags);
     
         // If there are matching hashtags, add the tweet ID to their `tweets` field
         if (matchingHashtags.length > 0) {
@@ -44,7 +42,7 @@ class TweetService {
             });
             
             // Bulk insert new hashtags
-            const createdHashtags = await Hashtag.insertMany(hashtagsToCreate);
+            const createdHashtags = await HashtagRepository.bulkCreate(hashtagsToCreate);
     
             // Collect the IDs of the newly created hashtags
             createdHashtags.forEach((hash) => {
@@ -57,6 +55,31 @@ class TweetService {
         await tweet.save(); // Save the tweet with the associated hashtags
     
         return tweet;
+    }
+
+    async delete(id) {
+
+        try {
+            const tweet = await TweetRepository.get(id);
+            if(!tweet) {
+                throw new Error("Tweet not found");
+            }
+            const hashtags = tweet.hashtags;
+            hashtags.forEach(async (hashtag) => {
+
+                const hash = await Hashtag.findById(hashtag);
+                hash.tweets = hash.tweets.filter((tweetId) => tweetId.toString() !== id);
+                await hash.save();
+            });
+            const isDelete = await TweetRepository.delete(id);
+            
+            return isDelete;
+            
+        } catch (error) {
+            console.log(error);
+        }
+
+        
     }
 
     async getTweets() {

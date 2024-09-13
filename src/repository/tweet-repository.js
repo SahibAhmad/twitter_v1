@@ -40,12 +40,16 @@ class TweetRepository {
         }
     }
 
-    async destroy(id) {
+    async delete(id) {
         try {
+            
             const tweet = Tweet.findByIdAndDelete(id);
+            
             return tweet;
+
         } catch (error) {
             console.log(error);
+            return true;
         }
     }
 

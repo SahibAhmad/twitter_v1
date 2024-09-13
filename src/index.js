@@ -14,7 +14,10 @@ app.listen(3000, async ()=> {
     console.log("Mongodb connected \n");
 
     const tweet = await TweetService.create({content: "This is a tweet #veryexcited #good #badvibes !"});
-    console.log(tweet.hashtags);
+    console.log(tweet);
+
+    // const tweet = await TweetService.delete("66e442883423cca51b37266e");
+    
    
     
     
