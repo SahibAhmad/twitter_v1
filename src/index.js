@@ -13,8 +13,8 @@ app.listen(3000, async ()=> {
     await connect();
     console.log("Mongodb connected \n");
 
-    const tweet = await TweetService.create({content: "This is a tweet #veryexcited #good"});
-    console.log(tweet);
+    const tweet = await TweetService.create({content: "This is a tweet #veryexcited #good #badvibes !"});
+    console.log(tweet.hashtags);
    
     
     

@@ -1,57 +1,64 @@
-const {TweetRepository} = require('../repository/index');
+const { TweetRepository } = require('../repository/index');
 const Hashtag = require('../models/hashtags');
 class TweetService {
     constructor() {
-        
+
     }
 
-    async create(data) { 
+    async create(data) {
         const content = data.content;
-        //regex = [^#] starts with # and then any character except space
+    
+        // Extract hashtags from the content using regex
         let hashtags = content.match(/#[^\s]+/g);
-        console.log(hashtags);
-        hashtags = hashtags.map((tag)=>tag.substring(1));
-        
-        // create hashtags in the db
-        // we might have to create a bunch of hashtags and then associate them with the tweet
-        /**
-         * 1. bulk create hashtags
-         * 2. filter out the hashtags that are already present in the db
-         * 3. add tweet id inside the hashtags
-         * 4.
-         */
-        const matchingHashtags = await Hashtag.find(
-            {
-                title: {$in: hashtags}
-            }
-        );
-        if(matchingHashtags.length>0) {
-            
-
-        const newHashtags = hashtags.filter((tag)=>!matchingHashtags.includes(tag));
-        const createdHashtags = await Hashtag.create(newHashtags.map((tag)=>{title: tag}));
-        console.log(createdHashtags);
-        // const allHashtags = [...createdHashtags, ...matchingHashtags];
-        // data.hashtags = allHashtags.map((tag)=>tag._id);
-
-
-        console.log(matchingHashtags); 
-        }
-        else
-        {
-            
-            
-            const createdHashtags = await Hashtag.create(hashtags.map((tag)=> {
-                return {title: tag}
-        }));
-            // console.log(createdHashtags);
-            // data.hashtags = createdHashtags.map((tag)=>tag._id);
-        }
+        hashtags = hashtags.map((tag) => tag.substring(1)); // Remove the # symbol
+    
+        // Create the tweet first
         const tweet = await TweetRepository.create(data);
+    
+        // Prepare to store hashtag IDs to associate with the tweet
+        const hashIds = [];
+    
+        // Find matching hashtags already in the database
+        let matchingHashtags = await Hashtag.find({
+            title: { $in: hashtags }
+        });
+    
+        // If there are matching hashtags, add the tweet ID to their `tweets` field
+        if (matchingHashtags.length > 0) {
+            const updatedHashtagsPromises = matchingHashtags.map(async (hash) => {
+                hashIds.push(hash._id); // Collect hashtag IDs
+                hash.tweets.push(tweet._id); // Associate tweet with hashtag
+                return hash.save(); // Save the updated hashtag
+            });
+            await Promise.all(updatedHashtagsPromises); // Wait for all updates to complete
+    
+            // Extract the titles of the matching hashtags to filter out
+            const matchedTitles = matchingHashtags.map((tag) => tag.title);
+            hashtags = hashtags.filter((tag) => !matchedTitles.includes(tag)); // Exclude existing hashtags
+        }
+    
+        // If there are new hashtags to create
+        if (hashtags.length > 0) {
+            const hashtagsToCreate = hashtags.map((tag) => {
+                return { title: tag, tweets: [tweet._id] };
+            });
+            
+            // Bulk insert new hashtags
+            const createdHashtags = await Hashtag.insertMany(hashtagsToCreate);
+    
+            // Collect the IDs of the newly created hashtags
+            createdHashtags.forEach((hash) => {
+                hashIds.push(hash._id);
+            });
+        }
+    
+        // Add all the hashtag IDs to the tweet and save it
+        tweet.hashtags.push(...hashIds); // Spread the IDs into the array
+        await tweet.save(); // Save the tweet with the associated hashtags
+    
         return tweet;
-
-        
     }
+    
 }
 
 /*
