@@ -1,19 +1,17 @@
-const express = require('express');
-const connect = require('./config/database');
+import express from  'express';
+import {connect} from './config/database.js'
 
 const app = express();
 
-const Tweet = require('./models/tweet');
-const TweetRepo = require('./repository/tweet-repository'); 
-const Comment = require('./models/comment');
-const TweetService = require('./services/tweet-service');
+
+import TweetService from './services/tweet-service.js';
 
 app.listen(3000, async ()=> {
     console.log("Server started \n");
     await connect();
     console.log("Mongodb connected \n");
 
-    const tweet = await TweetService.create({content: "This is a tweet #veryexcited #good #badvibes !"});
+    const tweet = await TweetService.create({content: "This is a tweet  !"});
     console.log(tweet);
 
     // const tweet = await TweetService.delete("66e442883423cca51b37266e");
